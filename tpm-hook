@@ -1,0 +1,36 @@
+#!/bin/sh 
+PREREQ=""  
+prereqs() 
+{ 
+  echo "$PREREQ" 
+} 
+case $1 in 
+  prereqs) 
+    prereqs 
+    exit 0 
+    ;; 
+esac 
+ 
+. /usr/share/initramfs-tools/hook-functions 
+ 
+# copy the daemon + config in the initrd 
+copy_exec /usr/sbin/tcsd /sbin 
+copy_exec /etc/tcsd.conf /etc 
+ 
+# copy the host config 
+copy_exec /etc/group /etc/ 
+copy_exec /etc/passwd /etc/ 
+copy_exec /etc/hosts /etc/ 
+ 
+# copy the necessary libraries 
+cp -fpL /lib/x86_64-linux-gnu/libns* ${DESTDIR}/lib/x86_64-linux-gnu/ 
+ 
+# copy the tpm configuration 
+mkdir -p "$DESTDIR/var/lib/tpm" 
+cp /var/lib/tpm/* "$DESTDIR/var/lib/tpm/" 
+ 
+#copy the files to read the NVRAM and to read the secret  
+copy_exec /usr/sbin/tpm_nvread /sbin/ 
+copy_exec /usr/sbin/tpm_nvinfo /sbin/
+copy_exec /sbin/getsecret.sh /sbin
+

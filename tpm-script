@@ -1,0 +1,12 @@
+#!/bin/sh 
+ 
+# configure the tpm 
+chown tss:tss /dev/tpm0 
+chmod 600 /dev/tpm0 
+ 
+ifconfig lo up 
+# start tcsd 
+if [ -f /sbin/tcsd ]; 
+then 
+  /sbin/tcsd 
+fi 
