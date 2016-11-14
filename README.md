@@ -220,9 +220,9 @@ It works? Perfect, you are ready to go!  Enjoy having to type one password less 
 
 The system still boots up, although it shouldn't? Have a look at the next step…
 
-## Activation of PCR locking
+## Setting the nvLocked bit
 
-On one of my test systems, I had the problem that the secret stored in the NVRAM could be read even when the PCRs it was sealed to had changed. It took me quite a long time to figure out what went wrong: Apparently, the TPM manufacturer didn't set the `nvLocked` bit, which meant that reading the NVRAM was always possible, no matter if you sealed it to some PCRs or assigned a password to it. Thanks to [this discussion](https://sourceforge.net/p/trousers/mailman/message/32332373/) at the TrouSers mailing list, I was finally able to figure out what to do:
+On one of my test systems, I had the problem that the secret stored in the NVRAM could be read even when the PCRs it was sealed to had changed. It took me quite a long time to figure out what went wrong: Apparently, the TPM manufacturer didn't set the `nvLocked` bit, which means that reading the NVRAM was always possible, no matter if you sealed it to some PCRs or assigned a password to it. Thanks to [this discussion](https://sourceforge.net/p/trousers/mailman/message/32332373/) at the TrouSers mailing list, I was finally able to figure out what to do:
 
 You'll have to define an area the size 0 at position `0xFFFFFFF` in the NVRAM. This will equal setting the nvLocked bit. You can do so with the following command:
 
