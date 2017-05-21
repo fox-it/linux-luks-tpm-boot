@@ -115,7 +115,7 @@ In case I forgot to consider something important in this decision, please let me
 
 ## Install necessary scripts
 
-We will store the secret directly in the TPM - in its NVRAM. There's a tool for that called [tpm-looks](https://github.com/shpedoikal/tpm-luks), but it seemed to be a bit top ,icj for what I needed (and only working with dracut), so I created my own bash scripts. First, to make things easier, I've created `/sbin/seal-nvram.sh`, a script that puts the content of your file in NVRAM and seals it to PCRs 0-13 if the parameter `-z` is NOT used. (I have to admit that checking for the `-z` parameter is quite hacky, but it did the job for me.) So, download seal-nvram.sh, move it to /sbin, and don't forget to make it executable:
+We will store the secret directly in the TPM - in its NVRAM. There's a tool for that called [tpm-luks](https://github.com/shpedoikal/tpm-luks), but it seemed to be a bit too much for what I needed (and only works with dracut), so I created my own bash scripts. First, to make things easier, I've created `/sbin/seal-nvram.sh`, a script that puts the content of your file in NVRAM and seals it to PCRs 0-13 if the parameter `-z` is NOT used. (I have to admit that checking for the `-z` parameter is quite hacky, but it did the job for me.) So, download seal-nvram.sh, move it to /sbin, and don't forget to make it executable:
 
 ```bash
 sudo mv seal-nvram.sh /sbin/
@@ -123,8 +123,7 @@ sudo chmod +x /sbin/seal-nvram.sh
 ```
 
 ```text
-Note: I have chosen to set the permission of the NVRAM I am creating to OWNERWRITE. Depending on 
-your situation, others might suit better. The full list of possibilities is here 
+Note: I have chosen to set the permission of the NVRAM I am creating to OWNERWRITE|READ_STCLEAR. Using READ_STCLEAR will allow us to block reading the secret from NVRAM once we decrypted our harddisk. Depending on your situation, others might suit better. The full list of possibilities is here 
 (taken from the tpm_nvdefine manpage):
 
 AUTHREAD : reading requires NVRAM area authorization
@@ -140,7 +139,7 @@ WRITEDEFINE : a write with size 0 to the same index locks the NVRAM area permane
 WRITEALL : the value must be written in a single operation
 ```
 
-Further, I have created a script that gets the content out of the NVRAM. Again, it's a bit hacky, but it does its job:
+Further, I have created a script that gets the content out of the NVRAM. This script will only be able to read the secret from NVRAM once, since it afterwards blocks further reads by reading 0 bits from the NVRAM area (see READ_STCLEAR). Again, it's a bit hacky, but it does its job:
 
 ```bash
 sudo mv getsecret.sh /sbin/
@@ -220,9 +219,9 @@ It works? Perfect, you are ready to go!  Enjoy having to type one password less 
 
 The system still boots up, although it shouldn't? Have a look at the next step…
 
-## Activation of PCR locking
+## Setting the nvLocked bit
 
-On one of my test systems, I had the problem that the secret stored in the NVRAM could be read even when the PCRs it was sealed to had changed. It took me quite a long time to figure out what went wrong: Apparently, the TPM manufacturer didn't set the `nvLocked` bit, which meant that reading the NVRAM was always possible, no matter if you sealed it to some PCRs or assigned a password to it. Thanks to [this discussion](https://sourceforge.net/p/trousers/mailman/message/32332373/) at the TrouSers mailing list, I was finally able to figure out what to do:
+On one of my test systems, I had the problem that the secret stored in the NVRAM could be read even when the PCRs it was sealed to had changed. It took me quite a long time to figure out what went wrong: Apparently, the TPM manufacturer didn't set the `nvLocked` bit, which means that reading the NVRAM was always possible, no matter if you sealed it to some PCRs or assigned a password to it. Thanks to [this discussion](https://sourceforge.net/p/trousers/mailman/message/32332373/) at the TrouSers mailing list, I was finally able to figure out what to do:
 
 You'll have to define an area the size 0 at position `0xFFFFFFF` in the NVRAM. This will equal setting the nvLocked bit. You can do so with the following command:
 

@@ -11,7 +11,7 @@ INDEX=1
 # The secret keyfile we will use to put into the NVRAM 
 KEYFILE="/secret.bin" 
 # The permissions we will require to read/write the NVRAM index
-PERMISSIONS="OWNERWRITE" 
+PERMISSIONS="OWNERWRITE|READ_STCLEAR" 
 
 if [ "$1" != "-z" ] 
 then 
@@ -34,5 +34,5 @@ tpm_nvdefine -i $INDEX -s $(wc -c $KEYFILE) -p $PERMISSIONS -o $OWNERPW -z $PCRS
 # Write the index if creating the index succeeded
 if [ $? -eq 0 ]
 then
-  tpm_nvwrite -i $INDEX -f $KEYFILE -p$OWNERPW -z
+  tpm_nvwrite -i $INDEX -f $KEYFILE -z -p$OWNERPW
 fi
