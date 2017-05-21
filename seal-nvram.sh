@@ -34,5 +34,5 @@ tpm_nvdefine -i $INDEX -s $(wc -c $KEYFILE) -p $PERMISSIONS -o $OWNERPW -z $PCRS
 # Write the index if creating the index succeeded
 if [ $? -eq 0 ]
 then
-  tpm_nvwrite -i $INDEX -f $KEYFILE -z -p$OWNERPW
+  tpm_nvwrite -i $INDEX -f $KEYFILE -z --password=$OWNERPW
 fi
