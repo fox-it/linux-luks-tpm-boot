@@ -25,14 +25,14 @@ read -s -p "Owner password: " OWNERPW
 tpm_nvinfo | grep \($INDEX\) > /dev/null
 if [ $? -eq 0 ]
 then
-  tpm_nvrelease -i $INDEX -o$OWNERPW
+  tpm_nvrelease -i $INDEX -o"$OWNERPW"
 fi
 
 # Create a new NVRAM index
-tpm_nvdefine -i $INDEX -s $(wc -c $KEYFILE) -p $PERMISSIONS -o $OWNERPW -z $PCRS
+tpm_nvdefine -i $INDEX -s $(wc -c $KEYFILE) -p $PERMISSIONS -o "$OWNERPW" -z $PCRS
 
 # Write the index if creating the index succeeded
 if [ $? -eq 0 ]
 then
-  tpm_nvwrite -i $INDEX -f $KEYFILE -z --password=$OWNERPW
+  tpm_nvwrite -i $INDEX -f $KEYFILE -z --password="$OWNERPW"
 fi
