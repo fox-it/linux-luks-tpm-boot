@@ -19,7 +19,7 @@ then
   PCRS="-r0 -r1 -r2 -r3 -r4 -r5 -r6 -r7 -r8 -r9 -r10 -r11 -r12 -r13" 
 fi 
 
-read -s -p "Owner password: " OWNERPW
+read -s -p -r "Owner password: " OWNERPW
 
 # Check if the NVRAM index already exists
 tpm_nvinfo | grep \($INDEX\) > /dev/null
