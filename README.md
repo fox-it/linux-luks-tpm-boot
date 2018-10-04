@@ -1,5 +1,10 @@
 # linux-luks-tpm-boot
 
+## Moved
+This repository is maintained by the original author at https://github.com/morbitzer/linux-luks-tpm-boot
+Please open any new issues/PRs here. The original guide is below for reference.
+
+## Introduction
 In my two and a half years as penetration tester, I had to learn the lesson that nowadays, physical access to a system doesn't necessarily mean access to all its secret data. I'm not much of a Windows guy, but I have to admit that Microsoft’s Bitlocker does a nice job with encrypting the harddisk and decrypting it at boot time without the user even noticing. If something in the boot-process is changed by an attacker, the system won't start up without having received the correct Bitlocker recovery key. This makes it more difficult ([I'm not saying impossible](https://events.ccc.de/camp/2007/Fahrplan/attachments/1300-Cryptokey_forensics_A.pdf)) for an attacker to gain access to a system for which he doesn't know the password, even though the system isn't asking for anything during boot time.
 
 All this is achieved with the help of a little chip on the mainboard, the Trusted Platform Module ([TPM](http://www.howtogeek.com/237232/what-is-a-tpm-and-why-does-windows-need-one-for-disk-encryption/)). Being a Linux guy myself, I wanted to achieve with my favorite OS what Windows was already capable of. I was not able to find a full guide how to use [LUKS](https://gitlab.com/cryptsetup/cryptsetup/blob/master/README.md) or any other disk-encryption in combination with the TPM under Linux, thus motivating me to investigate and describe this process. Everything that is needed already exists, but it took me quite a while to have everything set up correctly. I hope that with this guide I can save some people that work. So, let's get started.
